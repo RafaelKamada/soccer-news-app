@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_News"
+        android:icon="@drawable/ic_soccer_black_24dp"
+        android:title="@string/title_news" />
+
+    <item
+        android:id="@+id/navigation_Favorites"
+        android:icon="@drawable/ic_favorite_black_24dp"
+        android:title="@string/title_favorites" />
+
+</menu>
