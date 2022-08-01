@@ -1,17 +1,13 @@
 package me.dio.soccernews.ui.news;
 
-import android.widget.Toast;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import me.dio.soccernews.data.remote.SoccerNewsApi;
 import me.dio.soccernews.domain.News;
-import me.dio.soccernews.ui.adapter.NewsAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,8 +16,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NewsViewModel extends ViewModel {
 
-    private final MutableLiveData<List<News>> news = new MutableLiveData<>();
+    public enum State {
+        DOING, DONE, ERROR;
+    }
 
+    private final MutableLiveData<List<News>> news = new MutableLiveData<>();
+    private final MutableLiveData<State> state = new MutableLiveData<State>();
     private final SoccerNewsApi api;
 
     public NewsViewModel() {
@@ -31,33 +31,34 @@ public class NewsViewModel extends ViewModel {
                 .build();
 
         api = retrofit.create(SoccerNewsApi.class);
+
         findNews();
     }
 
     private void findNews() {
+        state.setValue(State.DOING);
         api.getNews().enqueue(new Callback<List<News>>() {
             @Override
             public void onResponse(Call<List<News>> call, Response<List<News>> response) {
                 if (response.isSuccessful()){
                     news.setValue(response.body());
-                    NewsAdapter adapter = new NewsAdapter();
+                    state.setValue(State.DONE);
+                   // NewsAdapter adapter = new NewsAdapter();
                 } else {
-                    ShowMessageError();
+                    state.setValue(State.ERROR);
                 }
             }
 
             @Override
             public void onFailure(Call<List<News>> call, Throwable t) {
-                ShowMessageError();
+                t.printStackTrace();
+                state.setValue(State.ERROR);
             }
         });
     }
 
-    private void ShowMessageError() {
-        //TODO criar alerta de erro
-    }
-
     public LiveData<List<News>> getNews() {
-        return news;
+        return this.news;
     }
+    public LiveData<State> getState() { return this.state; }
 }
